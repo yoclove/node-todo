@@ -18,7 +18,7 @@ MongoClient.connect(url, function(err, db) {
 	*/
 	
 	
-/*	db.collection('Users').insertOne({
+	db.collection('Users').insertOne({
 		name: '潘哲',
 		age: 25
 	},function(err, result){
@@ -28,8 +28,6 @@ MongoClient.connect(url, function(err, db) {
 		console.log(result);
 		console.log('插入成功');
 	});
-	*/
-	
 	
 	
 	db.close();
