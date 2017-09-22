@@ -1,7 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var ObjectId = require('mongodb').ObjectId;
-
+var _ = require('lodash');
 var mongoose = require('./db/mongoose').mongoose;
 var Todo = require('./modules/todo').Todo;
 var User = require('./modules/user').User;
@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.post('/todos',function(req, res){
 	console.log(req.body);
 	var newTodo = new Todo({
-		text: req.body.text
+		text: req.body.text,
 	});
 	newTodo.save().then(function(doc){
 		res.send(doc);
@@ -73,6 +73,35 @@ app.delete('/todos/:id', function(req, res){
 		});
 	}).catch(function(err){
 		res.status(404).send();
+	})
+	
+});
+
+app.patch('/todos/:id', function(req, res){
+	var id = req.params.id;
+	if( !ObjectId.isValid(id) ){
+		return res.status(404).send('id 错误');
+	}
+	
+	var body = _.pick(req.body, ['text','completed']);
+	
+	if(_.isBoolean(body.completed) && body.completed){
+		body.completedAt = new Date().getTime();
+	} else {
+		body.completed = false;
+		body.completedAt = null;
+	}
+	
+	Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then(function(todo){
+		if(!todo){
+			return res.status(404).send('没有找到');
+		}
+		
+		res.send({
+			todo: todo
+		});
+	}, function(err){
+		res.status(400).send(err);
 	})
 	
 });
