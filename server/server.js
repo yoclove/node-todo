@@ -49,7 +49,30 @@ app.get('/todos/:id', function(req, res){
 			todo: todo
 		});
 	}).catch(function(err){
-		res.status(404).send('');
+		res.status(404).send();
+	})
+	
+});
+
+
+app.delete('/todos/:id', function(req, res){
+	var id = req.params.id;
+	if( !ObjectId.isValid(id) ){
+		return res.status(404).send();
+	}
+	
+	// Todo.findOneAndRmove({})
+	// Todo.findByIdAndRmove('')
+	
+	Todo.findOneAndRemove({_id: id}).then(function(todo){
+		if(!todo){
+			return res.status(400).send();
+		}
+		res.send({
+			todo: todo
+		});
+	}).catch(function(err){
+		res.status(404).send();
 	})
 	
 });
