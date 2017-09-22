@@ -22,7 +22,16 @@ app.post('/todos',function(req, res){
 	});
 });
 
-
+app.get('/todos', function(req, res){
+	Todo.find().then(function(todos){
+		res.send({
+			todos: todos,
+			otherInfo: '其他信息'
+		})
+	}, function(err){
+		res.status(400).send('err');
+	})
+});
 
 app.listen('3000', function(){
 	console.log('正在监听3000端口');
