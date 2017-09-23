@@ -106,6 +106,31 @@ app.patch('/todos/:id', function(req, res){
 	
 });
 
+
+
+
+app.post('/users',function(req, res){
+	console.log(req.body);
+	
+	var body = _.pick(req.body, ['email','password']);
+	var user = new User(body);
+	
+	user.save().then(function(){
+		return user.generateAuthToken(); //返回promise 可以chain
+		// res.send(doc);
+	}).then(function(token){
+		
+		res.header('x-auth', token).send(user);	//返回token
+		
+	}).catch(function(e){
+		res.status(400).send(e);
+	})
+});
+
+
+
+
+
 app.listen('3000', function(){
 	console.log('正在监听3000端口');
 })
