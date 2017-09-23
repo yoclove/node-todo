@@ -127,9 +127,7 @@ app.post('/users',function(req, res){
 	})
 });
 
-
-
-app.get('/users/me',function(req, res){
+var authenticate = function(req, res, next){
 	var token = req.header('x-auth');
 	// 检测token
 	User.findByToken(token).then(function(user){
@@ -137,10 +135,22 @@ app.get('/users/me',function(req, res){
 			// res.status(401).send();
 			return Promise.reject();
 		}
-		res.send(user);
+		
+		// res.send(user);
+		req.user = user;
+		req.token = token;
+		
+		next(); //修改了req对象
 	}).catch(function(err){
 		res.status(401).send();
 	});
+	
+	
+}
+
+app.get('/users/me',authenticate, function(req, res){
+
+	res.send(req.user);
 });
 
 
