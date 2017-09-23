@@ -44,6 +44,7 @@ UserSchema.methods.toJSON = function(){
 	//只返回email 和 id
 }
 
+
 UserSchema.methods.generateAuthToken = function(){
 	// 这个函数来产品 tokens 数组 UserSchema.tokens
 	
@@ -61,6 +62,27 @@ UserSchema.methods.generateAuthToken = function(){
 	return user.save().then(function(){ //返回promise 可以chain
 		return token;
 	})
+}
+
+UserSchema.statics.findByToken = function(token){
+	var User = this; //
+	var decoded;
+	
+	try {
+		decoded = jwt.verify(token, '123456');	
+	} catch (e){
+		/*return new Promise(function(resove, reject){
+			reject();
+		});*/
+		return Promise.reject();
+	}
+	
+	return User.findOne({
+			'_id': decoded._id,
+			'tokens.access': 'auth',
+			'tokens.token': token
+		})
+	
 }
 var User = mongoose.model('User',UserSchema); //产生User模块
 

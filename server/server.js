@@ -129,6 +129,21 @@ app.post('/users',function(req, res){
 
 
 
+app.get('/users/me',function(req, res){
+	var token = req.header('x-auth');
+	// 检测token
+	User.findByToken(token).then(function(user){
+		if(!user){
+			// res.status(401).send();
+			return Promise.reject();
+		}
+		res.send(user);
+	}).catch(function(err){
+		res.status(401).send();
+	});
+});
+
+
 
 
 app.listen('3000', function(){
