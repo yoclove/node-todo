@@ -115,7 +115,9 @@ app.post('/users',function(req, res){
 	console.log(req.body);
 	
 	var body = _.pick(req.body, ['email','password']);
+	
 	var user = new User(body);
+	
 	
 	user.save().then(function(){
 		return user.generateAuthToken(); //返回promise 可以chain

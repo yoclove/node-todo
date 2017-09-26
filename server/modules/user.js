@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var validator = require('validator');
 var jwt = require('jsonwebtoken');
 var _ = require('lodash');
+var bcrypt = require('bcryptjs');
 
 
 // var User = mongoose.model('User',UserSchema);  我们不能给User添加方法，所以依赖UserSchema 来添加方法
@@ -84,8 +85,23 @@ UserSchema.statics.findByToken = function(token){
 		})
 	
 }
-var User = mongoose.model('User',UserSchema); //产生User模块
 
+UserSchema.pre('save',function(next){
+	var user = this;
+	if( user.isModified('password') ){
+		bcrypt.genSalt(10, function(err, salt){
+			bcrypt.hash(user.password, salt, function(err, hash){
+				user.password = hash;
+				next();
+			})
+		})
+	}else{
+		next();
+	}
+})
+
+
+var User = mongoose.model('User',UserSchema); //产生User模块
 
 module.exports  = {
 	User: User
