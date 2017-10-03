@@ -2,6 +2,7 @@ var User = require('../modules/user').User;
 
 var authenticate = function(req, res, next){
 	var token = req.header('x-auth');
+	console.log(token);
 	// 检测token
 	User.findByToken(token).then(function(user){
 		if(!user){

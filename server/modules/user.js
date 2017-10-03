@@ -64,6 +64,18 @@ UserSchema.methods.generateAuthToken = function(){
 		return token;
 	})
 }
+UserSchema.methods.removeToken = function(token){
+	var user = this; //user是每个document
+	return user.update({
+		$pull: {
+			tokens: {
+				token: token
+			}
+		}
+	})
+}
+
+
 
 UserSchema.statics.findByToken = function(token){
 	var User = this; //
@@ -84,6 +96,26 @@ UserSchema.statics.findByToken = function(token){
 			'tokens.token': token
 		})
 	
+}
+UserSchema.statics.findByCredentials = function(email, password){
+	var User = this;
+	
+	return User.findOne({
+		'email': email
+	}).then(function(user){
+		if(!user){
+			return Promise.reject();
+		}
+		return new Promise(function(resolve, reject){
+			bcrypt.compare(password, user.password, function(err,  res){
+				if(res){
+					resolve(user);
+				}else{
+					reject(err);
+				}
+			})
+		})
+	})
 }
 
 UserSchema.pre('save',function(next){
